@@ -1,4 +1,5 @@
 num_of_slots=8
+title="ma41"
 
 from tkinter import *
 from tkinter import scrolledtext
@@ -6,7 +7,9 @@ from tkinter import messagebox
 
 
 window = Tk()
-window.title("АПЕКС АКБ тестер")
+window.title(title)
+window.title(title+" - "+"com4")
+
 
 frm=[]
 stx=[]
@@ -32,4 +35,4 @@ for i in range(0,num_of_slots):
     frm[i].pack(side=LEFT)
 
 for i in range(0,num_of_slots):
-    stx[i].insert(INSERT,"Ячейка "+str(i))    
+    stx[i].insert(INSERT,"МАУП "+str(i))    
