@@ -1,5 +1,4 @@
 int numOfSlots=3;
-char* nam[]={"Ячейка1","Ячейка2","Ячейка3"};
 const int Upin[]={14,16,18};
 const int Ipin[]={15,17,19};
 
@@ -34,7 +33,8 @@ void loop() {
   {
     int Umeas=analogRead(Upin[i]);
     int Imeas=analogRead(Ipin[i]);
-    Serial.println(nam[i]);
+    Serial.println('s');
+    Serial.println(i);
     Serial.println(toVolts(Umeas));
     Serial.println(toAmperes(Imeas));
   }
