@@ -1,5 +1,6 @@
 num_of_slots=8
 title="ma41"
+port="com5"
 
 from tkinter import *
 from tkinter import scrolledtext
@@ -10,7 +11,7 @@ window = Tk()
 window.title(title)
 
 #debug
-window.title(title+" - "+"com5")
+window.title(title+" - "+port)
 
 frm=[]
 
@@ -25,7 +26,7 @@ def reset():
     pass
 
 #debug
-ser = serial.Serial("COM5")
+ser = serial.Serial(port,9600,timeout=0)
 
 for i in range(0,num_of_slots):
     frm.append(Frame(window))
@@ -54,10 +55,33 @@ for i in range(0,num_of_slots):
     stx[i].insert(INSERT,"МАУП "+str(i))    
 
 def loop1():
-    stx[1].insert(INSERT,ser.read())
-    window.after(5, loop1)      
 
-        
+    if ser.inWaiting()==0:
+        window.title(title+" - "+port+" OFFLINE")
+    else:
+        window.title(title+" - "+port+" online")
+        while ser.inWaiting()>0:
+            received=ser.read();
+            #stx[1].insert(INSERT,received) #debug
+            if received=='s':
+                stx[1].insert(INSERT,"SSS")       #debug
+                slot_c=ser.readline()
+                
+                if slot_c!='' and int(slot_c)>=0 and int(slot_c)<num_of_slots:
+                    slot_i=int(slot_c)
+                    lbl_u[slot_i]['text']=ser.readline()
+                    lbl_i[slot_i]['text']=ser.readline()
+                
+                    
+                    
+
+            
+    stx[1].insert(INSERT,ser.readline())       #debug
+    
+    
+
+    window.after(100, loop1)
+    
 loop1()
 
-#window.mainloop()
+window.mainloop()

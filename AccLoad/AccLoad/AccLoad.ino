@@ -38,5 +38,5 @@ void loop() {
     Serial.println(toVolts(Umeas));
     Serial.println(toAmperes(Imeas));
   }
-  delay(1000);
+  delay(50);
 }
