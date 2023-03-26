@@ -33,7 +33,7 @@ void loop() {
   {
     int Umeas=analogRead(Upin[i]);
     int Imeas=analogRead(Ipin[i]);
-    Serial.println('s');
+    Serial.println("slot");
     Serial.println(i);
     Serial.println(toVolts(Umeas));
     Serial.println(toAmperes(Imeas));

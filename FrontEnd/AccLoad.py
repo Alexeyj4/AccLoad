@@ -7,6 +7,7 @@ from tkinter import scrolledtext
 from tkinter import messagebox
 import serial
 
+
 window = Tk()
 window.title(title)
 
@@ -25,8 +26,21 @@ btn=[]
 def reset():
     pass
 
+def readser(): #read string from serial and delete escape symbols
+    received_string=ser.readline()
+    if received_string=='':
+        return ''
+    res_string=''
+    i=0
+    while(not (int(received_string[i])==('\r')) and not(int(received_string[i])==('\n'))):
+        res_string+=str(received_string[i])
+        i=i+1
+
+    return res_string
+
+
 #debug
-ser = serial.Serial(port,9600,timeout=0)
+ser = serial.Serial(port,9600)
 
 for i in range(0,num_of_slots):
     frm.append(Frame(window))
@@ -55,28 +69,26 @@ for i in range(0,num_of_slots):
     stx[i].insert(INSERT,"МАУП "+str(i))    
 
 def loop1():
-
     if ser.inWaiting()==0:
         window.title(title+" - "+port+" OFFLINE")
     else:
         window.title(title+" - "+port+" online")
         while ser.inWaiting()>0:
-            received=ser.read();
-            #stx[1].insert(INSERT,received) #debug
-            if received=='s':
-                stx[1].insert(INSERT,"SSS")       #debug
-                slot_c=ser.readline()
+            received=readser();
+            stx[1].insert(INSERT,received)
+            if received=='slot':            
+                slot_c=readser()
                 
                 if slot_c!='' and int(slot_c)>=0 and int(slot_c)<num_of_slots:
                     slot_i=int(slot_c)
-                    lbl_u[slot_i]['text']=ser.readline()
-                    lbl_i[slot_i]['text']=ser.readline()
+                    lbl_u[slot_i]['text']='U='+readser()
+                    lbl_i[slot_i]['text']=ser.readser()
                 
                     
                     
 
             
-    stx[1].insert(INSERT,ser.readline())       #debug
+
     
     
 
