@@ -1,6 +1,6 @@
-int numOfSlots=3;
-const int Upin[]={14,16,18};
-const int Ipin[]={15,17,19};
+int numOfSlots=7;
+const int Upin[]={14,16,18,14,16,18,14,16};
+const int Ipin[]={15,17,19,15,17,19,15,17};
 
 
 void setup() {
@@ -38,5 +38,5 @@ void loop() {
     Serial.println(toVolts(Umeas));
     Serial.println(toAmperes(Imeas));
   }
-  delay(50);
+  delay(100);
 }

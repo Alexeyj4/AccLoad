@@ -1,21 +1,23 @@
 num_of_slots=8
 title="ma41"
-port="com5"
+port="com11"
+
+meas_threshold=0.02
 
 from tkinter import *
 from tkinter import scrolledtext
 from tkinter import messagebox
 import serial
+from functools import partial
+import time
 
 
 window = Tk()
 window.title(title)
 
-#debug
 window.title(title+" - "+port)
 
 frm=[]
-
 lbl_name=[]
 lbl_u=[]
 lbl_i=[]
@@ -23,29 +25,54 @@ stx=[]
 lbl_status=[]
 btn=[]
 
-def reset():
+umin=[]
+umax=[]
+imin=[]
+imax=[]
+
+slot_status=[]
+slot_start_time=[]
+
+def reset_slot(slot_num):
+    umin[slot_num]=127;
+    umax[slot_num]=0;
+    imin[slot_num]=127;
+    imax[slot_num]=0;
+    slot_status[slot_num]='standby'        
+    
+
+def reset_press(slot_num):
+    stx[slot_num].delete('1.0', END)
     pass
 
 def readser(): #read string from serial and delete escape symbols
     received_string=ser.readline()
+    
     if received_string=='':
         return ''
     res_string=''
     i=0
-    while(not (int(received_string[i])==('\r')) and not(int(received_string[i])==('\n'))):
-        res_string+=str(received_string[i])
+    while(received_string[i]!=13 and received_string[i]!=10):    #!= \r \n
+        res_string=res_string+chr(received_string[i])
         i=i+1
-
     return res_string
 
-
-#debug
 ser = serial.Serial(port,9600)
 
 for i in range(0,num_of_slots):
+
+    umin.append(127);
+    umax.append(0);
+    imin.append(127);
+    imax.append(0);
+    slot_start_time.append(time.time());
+
+    slot_status.append('standby'); #standby/discharge
+    
+    
     frm.append(Frame(window))
 
-    lbl_name.append(Label(frm[i],text="МАУП"+str(i)))
+    lbl_name.append(Label(frm[i],text="Ячейка"+str(i)))
     lbl_name[i].pack()
 
     lbl_u.append(Label(frm[i],text="U="))
@@ -57,16 +84,14 @@ for i in range(0,num_of_slots):
     stx.append(scrolledtext.ScrolledText(frm[i],width = 20,height = 40))
     stx[i].pack()
 
-    lbl_status.append(Label(frm[i],text="Ожидание"))
+    lbl_status.append(Label(frm[i],text="Отключён",font='bold'))
     lbl_status[i].pack()
 
-    btn.append(Button(frm[i],text="Сброс",command=reset))
+    btn.append(Button(frm[i],text="Сброс",command=partial(reset_press, i))) 
     btn[i].pack()
     
     frm[i].pack(side=LEFT)
-
-for i in range(0,num_of_slots):
-    stx[i].insert(INSERT,"МАУП "+str(i))    
+  
 
 def loop1():
     if ser.inWaiting()==0:
@@ -75,19 +100,56 @@ def loop1():
         window.title(title+" - "+port+" online")
         while ser.inWaiting()>0:
             received=readser();
-            stx[1].insert(INSERT,received)
+            
             if received=='slot':            
                 slot_c=readser()
                 
-                if slot_c!='' and int(slot_c)>=0 and int(slot_c)<num_of_slots:
+                if len(slot_c)==1 and slot_c!='' and int(slot_c)>=0 and int(slot_c)<num_of_slots:
                     slot_i=int(slot_c)
-                    lbl_u[slot_i]['text']='U='+readser()
-                    lbl_i[slot_i]['text']=ser.readser()
-                
-                    
-                    
+                    try:
+                        u=float(readser())
+                        i=float(readser())
+                        skip=0
+                    except: #error in received data
+                        stx[slot_i].insert(INSERT,'Error\n')
+                        skip=1
+                        
 
-            
+                    if skip==0:
+                        lbl_u[slot_i]['text']='U='+str(u)
+                        lbl_i[slot_i]['text']='I='+str(i)
+
+                        if u>meas_threshold or i>meas_threshold:
+                            lbl_status[slot_i].config(text="Разряд",background='yellow')
+
+                            if slot_status[slot_i]=='standby':
+                                slot_start_time[slot_i]=time.time();
+
+
+                            slot_status[slot_i]='discharge'
+                                
+                            
+                            stx[slot_i].insert(INSERT,str(u)+'/'+str(i)+'\n')
+                            if u<umin[slot_i]:
+                                umin[slot_i]=u
+                            if u>umax[slot_i]:
+                                umax[slot_i]=u                                
+                            if i<imin[slot_i]:
+                                imin[slot_i]=i
+                            if i>imax[slot_i]:
+                                imax[slot_i]=i                                
+                        else:                            
+                            lbl_status[slot_i].config(text="Ожидание",background='green')
+
+                            if slot_status[slot_i]!='standby':
+                                stx[slot_i].insert(INSERT,"Umin="+str(umin[slot_i])+'\n')
+                                stx[slot_i].insert(INSERT,"Umax="+str(umax[slot_i])+'\n')
+                                stx[slot_i].insert(INSERT,"Imin="+str(imin[slot_i])+'\n')
+                                stx[slot_i].insert(INSERT,"Imax="+str(imax[slot_i])+'\n')
+                                stx[slot_i].insert(INSERT, str(time.time()-slot_start_time[slot_i])+'\n')
+                                
+                                reset_slot(slot_i)
+              
 
     
     
