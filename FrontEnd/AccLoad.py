@@ -1,8 +1,8 @@
 num_of_slots=8
-title="ma41"
-port="com11"
+title="APEX Acc tester v1.0"
+port="com5"
 
-meas_threshold=0.02
+meas_threshold=0.08
 
 from tkinter import *
 from tkinter import scrolledtext
@@ -38,11 +38,14 @@ def reset_slot(slot_num):
     umax[slot_num]=0;
     imin[slot_num]=127;
     imax[slot_num]=0;
-    slot_status[slot_num]='standby'        
+    slot_status[slot_num]='standby'
+    lbl_status[slot_num].config(text="Ожидание",background='white')
+    
     
 
 def reset_press(slot_num):
     stx[slot_num].delete('1.0', END)
+    reset_slot(slot_num)
     pass
 
 def readser(): #read string from serial and delete escape symbols
@@ -67,7 +70,7 @@ for i in range(0,num_of_slots):
     imax.append(0);
     slot_start_time.append(time.time());
 
-    slot_status.append('standby'); #standby/discharge
+    slot_status.append('standby'); #standby/discharge/complete
     
     
     frm.append(Frame(window))
@@ -84,7 +87,7 @@ for i in range(0,num_of_slots):
     stx.append(scrolledtext.ScrolledText(frm[i],width = 20,height = 40))
     stx[i].pack()
 
-    lbl_status.append(Label(frm[i],text="Отключён",font='bold'))
+    lbl_status.append(Label(frm[i],text="Не работает",font='bold'))
     lbl_status[i].pack()
 
     btn.append(Button(frm[i],text="Сброс",command=partial(reset_press, i))) 
@@ -120,35 +123,34 @@ def loop1():
                         lbl_i[slot_i]['text']='I='+str(i)
 
                         if u>meas_threshold or i>meas_threshold:
-                            lbl_status[slot_i].config(text="Разряд",background='yellow')
-
                             if slot_status[slot_i]=='standby':
                                 slot_start_time[slot_i]=time.time();
-
-
-                            slot_status[slot_i]='discharge'
-                                
+                                lbl_status[slot_i].config(text="Разряд",background='yellow')
+                                slot_status[slot_i]='discharge'                                
                             
-                            stx[slot_i].insert(INSERT,str(u)+'/'+str(i)+'\n')
-                            if u<umin[slot_i]:
-                                umin[slot_i]=u
-                            if u>umax[slot_i]:
-                                umax[slot_i]=u                                
-                            if i<imin[slot_i]:
-                                imin[slot_i]=i
-                            if i>imax[slot_i]:
-                                imax[slot_i]=i                                
+                            if slot_status[slot_i]=='discharge':
+                                stx[slot_i].insert(INSERT,str(u)+'/'+str(i)+'\n')
+                                if u<umin[slot_i]:
+                                    umin[slot_i]=u
+                                if u>umax[slot_i]:
+                                    umax[slot_i]=u                                
+                                if i<imin[slot_i]:
+                                    imin[slot_i]=i
+                                if i>imax[slot_i]:
+                                    imax[slot_i]=i                                
                         else:                            
-                            lbl_status[slot_i].config(text="Ожидание",background='green')
 
-                            if slot_status[slot_i]!='standby':
+                            if slot_status[slot_i]=='discharge':
+                                lbl_status[slot_i].config(text="Всё!",background='green')
+                                slot_status[slot_i]='complete'                            
                                 stx[slot_i].insert(INSERT,"Umin="+str(umin[slot_i])+'\n')
                                 stx[slot_i].insert(INSERT,"Umax="+str(umax[slot_i])+'\n')
                                 stx[slot_i].insert(INSERT,"Imin="+str(imin[slot_i])+'\n')
                                 stx[slot_i].insert(INSERT,"Imax="+str(imax[slot_i])+'\n')
-                                stx[slot_i].insert(INSERT, str(time.time()-slot_start_time[slot_i])+'\n')
-                                
+                                stx[slot_i].insert(INSERT, str(time.time()-slot_start_time[slot_i])+'\n')                                
                                 reset_slot(slot_i)
+                                slot_status[slot_i]='complete'
+                                
               
 
     
