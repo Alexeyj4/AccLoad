@@ -1,4 +1,4 @@
-#define numOfSlots 1
+#define numOfSlots 2
 #define array_len 20 //array length for measure filter
 #define valid_threshold 230 //not valid measure filter value
 const int Upin[]={14,16,18,14,16,18,14,16};
@@ -52,8 +52,14 @@ int valid(int s){  //s=slot number
     if(imin>i[s][a])imin=i[s][a];
     if(imax<i[s][a])imax=i[s][a];
   }
-  if((umax-umin)>valid_threshold)return 0;
-  if((imax-imin)>valid_threshold)return 0;
+  if((umax-umin)>valid_threshold){
+    //Serial.println("nv"); //debug
+    return 0;
+  }
+  if((imax-imin)>valid_threshold){
+    //Serial.println("nv"); //debug
+    return 0;
+  }
   return 1;
 }
 

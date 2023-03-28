@@ -17,6 +17,12 @@ config.read("settings.ini")  # читаем конфиг
 num_of_slots=int(config['settings']['num_of_slots'])
 port=config["settings"]["port"]
 
+amper_hour_min_norma=float(config["settings"]["amper_hour_min_norma"])
+amper_hour_max_norma=float(config["settings"]["amper_hour_max_norma"])
+Umin_norma=float(config["settings"]["Umin_norma"])
+Umax_norma=float(config["settings"]["Umax_norma"])
+Imin_norma=float(config["settings"]["Imin_norma"])
+Imax_norma=float(config["settings"]["Imax_norma"])
 
 window = Tk()
 window.title(title)
@@ -45,9 +51,7 @@ def reset_slot(slot_num):
     imin[slot_num]=127;
     imax[slot_num]=0;
     slot_status[slot_num]='standby'
-    lbl_status[slot_num].config(text="Ожидание",background='white')
-    
-    
+    lbl_status[slot_num].config(text="Ожидание",background='white')    
 
 def reset_press(slot_num):
     stx[slot_num].delete('1.0', END)
@@ -131,10 +135,11 @@ def loop1():
                         if u>meas_threshold or i>meas_threshold:        #есть ток или напряжение
 
                             if slot_status[slot_i]=='standby':
-                                slot_start_time[slot_i]=time.time();
-                                stx[slot_i].insert(INSERT,'Начало\n');
-                                stx[slot_i].insert(INSERT,'разряда\n');
-                                stx[slot_i].insert(INSERT,time.ctime(time.time));
+                                slot_start_time[slot_i]=time.time()
+                                stx[slot_i].insert(INSERT,'Начало разряда:\n')
+                                minutes=str(time.localtime(time.time()).tm_min)                                
+                                if len(minutes)==1: minutes='0'+minutes
+                                stx[slot_i].insert(INSERT,str(time.localtime(time.time()).tm_hour)+':'+minutes+'\n')
                                 lbl_status[slot_i].config(text="Разряд",background='yellow')
                                 slot_status[slot_i]='discharge'                                
                             
@@ -150,15 +155,38 @@ def loop1():
                                     imax[slot_i]=i                                
                         else:                                       #нет тока или напряжения                      
 
-                            if slot_status[slot_i]=='discharge':                                                                                        
+                            if slot_status[slot_i]=='discharge':
+                                stx[slot_i].insert(INSERT,'Конец разряда:\n')
+                                
+                                minutes=str(time.localtime(time.time()).tm_min)                                
+                                if len(minutes)==1: minutes='0'+minutes
+                                stx[slot_i].insert(INSERT, str(time.localtime(time.time()).tm_hour)+':'+minutes+'\n')
                                 stx[slot_i].insert(INSERT,"Umin="+str(umin[slot_i])+'\n')
                                 stx[slot_i].insert(INSERT,"Umax="+str(umax[slot_i])+'\n')
                                 stx[slot_i].insert(INSERT,"Imin="+str(imin[slot_i])+'\n')
                                 stx[slot_i].insert(INSERT,"Imax="+str(imax[slot_i])+'\n')
-                                stx[slot_i].insert(INSERT, str(time.time()-slot_start_time[slot_i])+'\n')                                
+                                stx[slot_i].insert(INSERT,'Время разряда:\n')
+                                t_dsch_sec=time.time()-slot_start_time[slot_i]                                
+                                stx[slot_i].insert(INSERT,str(round(t_dsch_sec/60,2))+' мин\n')                                
+                                stx[slot_i].insert(INSERT,'Ёмкость:\n')
+                                ah=round(t_dsch_sec/3600*((imin[slot_i]+imax[slot_i])/2),2)
+                                stx[slot_i].insert(INSERT,str(ah)+'А-ч')
+
+                                ok=1
+                                if ah<amper_hour_min_norma: ok=0
+                                if ah>amper_hour_max_norma: ok=0
+                                if umin[slot_i]<Umin_norma: ok=0
+                                if umax[slot_i]>Umax_norma: ok=0
+                                if imin[slot_i]<Imin_norma: ok=0
+                                if imax[slot_i]>Imax_norma: ok=0
+
                                 reset_slot(slot_i)
-                                slot_status[slot_i]='complete'
-                                lbl_status[slot_i].config(text="Всё!",background='green')
+                                if ok==1:   
+                                    slot_status[slot_i]='complete'
+                                    lbl_status[slot_i].config(text="Годен!",background='green')
+                                else:
+                                    slot_status[slot_i]='complete'
+                                    lbl_status[slot_i].config(text="Не годен!",background='red')
                                 
               
 
