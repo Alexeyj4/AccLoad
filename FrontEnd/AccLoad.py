@@ -1,6 +1,6 @@
-num_of_slots=8
+#num_of_slots=8
 title="APEX Acc tester v1.0"
-port="com5"
+#port="com11"
 
 meas_threshold=0.08
 
@@ -10,6 +10,12 @@ from tkinter import messagebox
 import serial
 from functools import partial
 import time
+import configparser
+
+config = configparser.ConfigParser()  # создаём объекта парсера
+config.read("settings.ini")  # читаем конфиг
+num_of_slots=int(config['settings']['num_of_slots'])
+port=config["settings"]["port"]
 
 
 window = Tk()
@@ -122,9 +128,13 @@ def loop1():
                         lbl_u[slot_i]['text']='U='+str(u)
                         lbl_i[slot_i]['text']='I='+str(i)
 
-                        if u>meas_threshold or i>meas_threshold:
+                        if u>meas_threshold or i>meas_threshold:        #есть ток или напряжение
+
                             if slot_status[slot_i]=='standby':
                                 slot_start_time[slot_i]=time.time();
+                                stx[slot_i].insert(INSERT,'Начало\n');
+                                stx[slot_i].insert(INSERT,'разряда\n');
+                                stx[slot_i].insert(INSERT,time.ctime(time.time));
                                 lbl_status[slot_i].config(text="Разряд",background='yellow')
                                 slot_status[slot_i]='discharge'                                
                             
@@ -138,11 +148,9 @@ def loop1():
                                     imin[slot_i]=i
                                 if i>imax[slot_i]:
                                     imax[slot_i]=i                                
-                        else:                            
+                        else:                                       #нет тока или напряжения                      
 
-                            if slot_status[slot_i]=='discharge':
-                                lbl_status[slot_i].config(text="Всё!",background='green')
-                                slot_status[slot_i]='complete'                            
+                            if slot_status[slot_i]=='discharge':                                                                                        
                                 stx[slot_i].insert(INSERT,"Umin="+str(umin[slot_i])+'\n')
                                 stx[slot_i].insert(INSERT,"Umax="+str(umax[slot_i])+'\n')
                                 stx[slot_i].insert(INSERT,"Imin="+str(imin[slot_i])+'\n')
@@ -150,6 +158,7 @@ def loop1():
                                 stx[slot_i].insert(INSERT, str(time.time()-slot_start_time[slot_i])+'\n')                                
                                 reset_slot(slot_i)
                                 slot_status[slot_i]='complete'
+                                lbl_status[slot_i].config(text="Всё!",background='green')
                                 
               
 
