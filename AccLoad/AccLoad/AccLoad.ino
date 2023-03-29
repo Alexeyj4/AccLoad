@@ -4,6 +4,9 @@
 const int Upin[]={14,16,18,14,16,18,14,16};
 const int Ipin[]={15,17,19,15,17,19,15,17};
 
+const float Ucal[]={32.7,44.48,1,1,1,1,1,1}; //U measire calibration array
+const float Ical[]={229.1,306.39,1,1,1,1,1,1}; //I measire calibration array
+
 int Umeas;
 int Imeas;
 int u[numOfSlots][array_len];
@@ -29,7 +32,7 @@ float toVolts(int s) //count average and converting
   for(int a=0;a<array_len;a++){
     sum+=u[s][a];
   }
-  return sum/array_len/32.7;
+  return float(sum)/float(array_len)/Ucal[s];
 }
 
 float toAmperes(int s) //count average and converting
@@ -38,7 +41,7 @@ float toAmperes(int s) //count average and converting
   for(int a=0;a<array_len;a++){
     sum+=i[s][a];
   }
-  return sum/array_len/229.1;
+  return float(sum)/float(array_len)/Ical[s];
 }
 
 int valid(int s){  //s=slot number 
