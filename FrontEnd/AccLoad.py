@@ -46,7 +46,9 @@ imax=[]
 slot_status=[]
 slot_start_time=[]
 
-interval_trigger=0 #interval trigger to fix 10 minutes interval to print measure in log screen
+interval_trigger=[] #interval trigger to fix 10 minutes interval to print measure in log screen
+for n in range(0,num_of_slots):
+    interval_trigger.append(0)
 
 def reset_slot(slot_num):
     umin[slot_num]=127
@@ -152,12 +154,11 @@ def loop1():
                             if slot_status[slot_i]=='discharge':
 
                                 minutes=str(time.localtime(time.time()).tm_min)
-                                if len(minutes)==1: minutes='0'+minutes
-                                global interval_trigger
-                                if minutes[1]=='0' and interval_trigger==0:                                         #check 10 min interval for pritn in log screen
+                                if len(minutes)==1: minutes='0'+minutes                                
+                                if minutes[1]=='0' and interval_trigger[slot_i]==0:                                         #check 10 min interval for print in log screen
                                     stx[slot_i].insert(INSERT,str(u)+'В/'+str(i)+'А '+str(time.localtime(time.time()).tm_hour)+':'+minutes+'\n')                                    
-                                    interval_trigger=1
-                                if minutes[1]!='0': interval_trigger=0 
+                                    interval_trigger[slot_i]=1
+                                if minutes[1]!='0': interval_trigger[slot_i]=0 
                                 
                                 if u<umin[slot_i]:
                                     umin[slot_i]=u
