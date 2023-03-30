@@ -130,7 +130,7 @@ def loop1():
                         i=float(readser())
                         skip=0
                     except: #error in received data
-                        stx[slot_i].insert(INSERT,'Error\n')
+                        stx[slot_i].insert(INSERT,'......\n')
                         skip=1
                         
 
@@ -151,7 +151,7 @@ def loop1():
                             
                             if slot_status[slot_i]=='discharge':
 
-                                minutes=str(time.localtime(time.time()).tm_ьшт)
+                                minutes=str(time.localtime(time.time()).tm_min)
                                 if len(minutes)==1: minutes='0'+minutes
                                 global interval_trigger
                                 if minutes[1]=='0' and interval_trigger==0:                                         #check 10 min interval for pritn in log screen
