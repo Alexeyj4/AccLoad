@@ -164,7 +164,8 @@ def loop1():
                         lbl_u[slot_i]['text']='U='+str(u)       #real-time output U and I
                         lbl_i[slot_i]['text']='I='+str(i)
                         if draw_charts==1:
-                            cnvs[slot_i].create_line(3, cnvs_current_y[slot_i] , u*15, cnvs_current_y[slot_i])
+                            if int(cnvs_current_y[slot_i])!=(int(cnvs_current_y[slot_i]+1/charts_scale)):
+                                cnvs[slot_i].create_line(3, int(cnvs_current_y[slot_i]) , u*15, int(cnvs_current_y[slot_i]))
                             cnvs_current_y[slot_i]+=1/charts_scale
     
                         if u>meas_threshold or i>meas_threshold:        #есть ток или напряжение
