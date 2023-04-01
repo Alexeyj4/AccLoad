@@ -76,6 +76,8 @@ def reset_cnvs(slot_num):
 def reset_press(slot_num):
     stx[slot_num].delete('1.0', END)
     reset_slot(slot_num)
+    if draw_charts==1:
+        reset_cnvs(slot_num)
     pass
 
 def readser(): #read string from serial and delete escape symbols
