@@ -1,10 +1,13 @@
 title="APEX Acc tester v1.0"
 
 meas_threshold=0.08
+cnvs_width=150
+cnvs_heigth=500
 
 from tkinter import *
 from tkinter import scrolledtext
 from tkinter import messagebox
+from tkinter import Canvas
 import serial
 from functools import partial
 import time
@@ -21,6 +24,9 @@ try:
     Umax_norma=float(config["settings"]["Umax_norma"])
     Imin_norma=float(config["settings"]["Imin_norma"])
     Imax_norma=float(config["settings"]["Imax_norma"])
+    draw_charts=int(config["settings"]["draw_charts"])
+    charts_scale=int(config["settings"]["charts_scale"])
+    
 except:
     messagebox.showerror("Ошибка","Ошибка в ini-файле")
     
@@ -37,6 +43,7 @@ lbl_i=[]
 stx=[]
 lbl_status=[]
 btn=[]
+cnvs=[]
 
 umin=[]
 umax=[]
@@ -46,9 +53,12 @@ imax=[]
 slot_status=[]
 slot_start_time=[]
 
+cnvs_current_y=[] #current y (time) coordinates for each slot
+
 interval_trigger=[] #interval trigger to fix 10 minutes interval to print measure in log screen
 for n in range(0,num_of_slots):
     interval_trigger.append(0)
+    cnvs_current_y.append(0)
 
 def reset_slot(slot_num):
     umin[slot_num]=127
@@ -56,7 +66,12 @@ def reset_slot(slot_num):
     imin[slot_num]=127
     imax[slot_num]=0
     slot_status[slot_num]='standby'
-    lbl_status[slot_num].config(text="Ожидание",background='white')    
+    lbl_status[slot_num].config(text="Ожидание",background='white')
+
+def reset_cnvs(slot_num):
+    cnvs_current_y[slot_num]=0
+    cnvs[slot_num].delete('all')
+    cnvs[slot_num].create_rectangle(2,2,cnvs_width,cnvs_heigth)
 
 def reset_press(slot_num):
     stx[slot_num].delete('1.0', END)
@@ -70,6 +85,7 @@ def readser(): #read string from serial and delete escape symbols
         return ''
     res_string=''
     i=0
+    
     while(received_string[i]!=13 and received_string[i]!=10):    #!= \r \n
         res_string=res_string+chr(received_string[i])
         i=i+1
@@ -102,7 +118,13 @@ for i in range(0,num_of_slots):
     lbl_i.append(Label(frm[i],text="I="))
     lbl_i[i].pack()
 
-    stx.append(scrolledtext.ScrolledText(frm[i],width = 20,height = 40))
+    if draw_charts==1:
+        cnvs.append(Canvas(frm[i],width=cnvs_width,height=cnvs_heigth))
+        cnvs[i].pack()
+    if draw_charts==1:
+        stx.append(scrolledtext.ScrolledText(frm[i],width = 20,height = 15))
+    else:
+        stx.append(scrolledtext.ScrolledText(frm[i],width = 20,height = 40))
     stx[i].pack()
 
     lbl_status.append(Label(frm[i],text="Не работает",font='bold'))
@@ -137,19 +159,26 @@ def loop1():
                         
 
                     if skip==0:
-                        lbl_u[slot_i]['text']='U='+str(u)
+                        lbl_u[slot_i]['text']='U='+str(u)       #real-time output U and I
                         lbl_i[slot_i]['text']='I='+str(i)
+                        if draw_charts==1:
+                            cnvs[slot_i].create_line(3, cnvs_current_y[slot_i] , u*15, cnvs_current_y[slot_i])
+                            cnvs_current_y[slot_i]+=1/charts_scale
     
                         if u>meas_threshold or i>meas_threshold:        #есть ток или напряжение
 
                             if slot_status[slot_i]=='standby':
                                 slot_start_time[slot_i]=time.time()
                                 stx[slot_i].insert(INSERT,'Начало разряда:\n')
-                                minutes=str(time.localtime(time.time()).tm_min)                                
+                                minutes=str(time.localtime(time.time()).tm_min)
+                                if draw_charts==1:
+                                    reset_cnvs(slot_i)
+                                
                                 if len(minutes)==1: minutes='0'+minutes
                                 stx[slot_i].insert(INSERT,str(time.localtime(time.time()).tm_hour)+':'+minutes+'\n')
                                 lbl_status[slot_i].config(text="Разряд",background='yellow')
-                                slot_status[slot_i]='discharge'                                
+                                slot_status[slot_i]='discharge'
+                                
                             
                             if slot_status[slot_i]=='discharge':
 
