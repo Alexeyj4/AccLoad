@@ -219,8 +219,8 @@ def loop1():
                                 stx[slot_i].insert(INSERT,str(ah)+'А-ч')
 
                                 ok=1
-                                if ah>amper_hour_min_norma: ok=0
-                                if ah<amper_hour_max_norma: ok=0
+                                if ah<amper_hour_min_norma: ok=0
+                                if ah>amper_hour_max_norma: ok=0
                                 if umin[slot_i]<Umin_norma: ok=0
                                 if umax[slot_i]>Umax_norma: ok=0
                                 if imin[slot_i]<Imin_norma: ok=0
