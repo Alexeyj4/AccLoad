@@ -1097,7 +1097,7 @@
     (property "Value" "to MCU" (id 1) (at 162.56 55.8799 0)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Footprint" "Connector_JST:JST_EH_B4B-EH-A_1x04_P2.50mm_Vertical" (id 2) (at 161.29 55.88 0)
+    (property "Footprint" "Connector_JST:JST_PH_B4B-PH-K_1x04_P2.00mm_Vertical" (id 2) (at 161.29 55.88 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 161.29 55.88 0)
@@ -1446,7 +1446,7 @@
       (reference "H4") (unit 1) (value "load-") (footprint "MountingHole:MountingHole_2.2mm_M2_DIN965_Pad_TopBottom")
     )
     (path "/2a292674-a08c-4161-8921-c6c48539d8a7"
-      (reference "J1") (unit 1) (value "to MCU") (footprint "Connector_JST:JST_EH_B4B-EH-A_1x04_P2.50mm_Vertical")
+      (reference "J1") (unit 1) (value "to MCU") (footprint "Connector_JST:JST_PH_B4B-PH-K_1x04_P2.00mm_Vertical")
     )
     (path "/73eb8cce-d31f-424a-b1d5-e63d534c181c"
       (reference "R1") (unit 1) (value "1 Ом 1 Вт") (footprint "Resistor_SMD:R_2512_6332Metric_Pad1.40x3.35mm_HandSolder")
