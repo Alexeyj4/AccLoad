@@ -1,11 +1,13 @@
-#define numOfSlots 2
+#define numOfSlots 8
 #define array_len 20 //array length for measure filter
 #define valid_threshold 230 //not valid measure filter value
-const int Upin[]={14,16,18,14,16,18,14,16};
-const int Ipin[]={15,17,19,15,17,19,15,17};
+#define valid_check_flag 1 //check measure valid or not chech
 
-const float Ucal[]={32.7,44.48,1,1,1,1,1,1}; //U measire calibration array
-const float Ical[]={229.1,306.39,1,1,1,1,1,1}; //I measire calibration array
+const int Upin[]={54,56,58,60,62,64,66,68};
+const int Ipin[]={55,57,59,61,63,65,67,69};
+
+const float Ucal[]={44.34,  44.34,  44.34,  44.34, 44.34,  44.34, 44.34, 44.34}; //U measure calibration array //U(volts)=U(ADC)/Ucal
+const float Ical[]={310.5,  310.5,  310.5,  310.5,  310.5,  310.5,  310.5,  310.5}; //I measure calibration array //I(amperes)=I(ADC)/Ical
 
 int Umeas;
 int Imeas;
@@ -22,7 +24,7 @@ void setup() {
     pinMode(Ipin[s],INPUT);
   }
 
-analogReference(INTERNAL);
+analogReference(INTERNAL1V1);
 }
 
 
@@ -45,6 +47,7 @@ float toAmperes(int s) //count average and converting
 }
 
 int valid(int s){  //s=slot number 
+  if(valid_check_flag==0)return 1;
   int umin=1024;
   int umax=0;
   int imin=1024;

@@ -1,4 +1,4 @@
-title="APEX Acc tester v1.0"
+title="Тестер АКБ АПЕКС v1.0"
 
 meas_threshold=0.08
 cnvs_width=150
@@ -140,9 +140,9 @@ for i in range(0,num_of_slots):
 
 def loop1():
     if ser.inWaiting()==0:
-        window.title(title+" - "+port+" Отключён")
+        window.title(title+" - "+port+" - Ожидание")
     else:
-        window.title(title+" - "+port+" Подключён")
+        window.title(title+" - "+port+" - Измерение")
         while ser.inWaiting()>0:
             received=readser()
             
