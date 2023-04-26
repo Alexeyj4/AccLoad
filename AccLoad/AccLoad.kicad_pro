@@ -48,7 +48,13 @@
           "min_clearance": 0.0
         }
       },
-      "diff_pair_dimensions": [],
+      "diff_pair_dimensions": [
+        {
+          "gap": 0.0,
+          "via_gap": 0.0,
+          "width": 0.0
+        }
+      ],
       "drc_exclusions": [
         "clearance|127957187|92145042|19dffe79-0fb2-4e2f-b39c-6dbe37c8081d|47d396dd-5c47-435c-b980-555d69b3a44b",
         "clearance|128735956|90445044|4f0c7f88-2187-4136-b3a7-c13e69e87ae7|47d396dd-5c47-435c-b980-555d69b3a44b",
@@ -87,6 +93,11 @@
         "clearance|144381000|103759000|abfa0b89-265b-4182-b7f9-23bf8177ecd1|98c6cf79-c993-4ec8-9dd1-3edbb181d879",
         "clearance|151957000|88941000|e5ce04e3-224c-4667-b3ed-6a0e6f3ee701|8d5dcac7-0ca3-47b3-b0d6-95dfddc0a1ad",
         "clearance|152128000|88770000|5eec5676-5e6b-4b8b-a8f8-5bac14df560a|8d5dcac7-0ca3-47b3-b0d6-95dfddc0a1ad",
+        "clearance|152636000|85595000|6989f95b-3d62-4ac9-b4e7-5b787bf47783|8d5dcac7-0ca3-47b3-b0d6-95dfddc0a1ad",
+        "clearance|152636000|86865000|a25a2b2d-ed41-4dad-9481-5999a83606a5|8d5dcac7-0ca3-47b3-b0d6-95dfddc0a1ad",
+        "clearance|152636000|86865000|fe5a5bc5-c205-43ec-8ace-1867acf37e78|8d5dcac7-0ca3-47b3-b0d6-95dfddc0a1ad",
+        "clearance|154795000|86992000|2c3c72fc-68a6-43e2-ae3f-44ebc41d634e|0c19dbaa-13be-4ae3-b406-b227cbf2821a",
+        "clearance|154795000|86992000|5dbcf305-ff86-4527-8d7c-05471a5d713f|0c19dbaa-13be-4ae3-b406-b227cbf2821a",
         "clearance|155348000|88942000|32def698-e8e0-4cf9-81a6-d7d82f28b8d8|0c19dbaa-13be-4ae3-b406-b227cbf2821a",
         "clearance|155684000|89278000|e765ae96-b2af-4e11-99dd-0d5852e46066|0c19dbaa-13be-4ae3-b406-b227cbf2821a",
         "courtyards_overlap|118443509|87995549|614b215e-15a9-43f3-89fa-d53c33d5a8e7|e71fe9c9-a8ee-4572-b552-bf18f6fcb0ca",
@@ -157,8 +168,16 @@
         "solder_mask_min_width": 0.0,
         "use_height_for_length_calcs": true
       },
-      "track_widths": [],
-      "via_dimensions": [],
+      "track_widths": [
+        0.0,
+        0.5
+      ],
+      "via_dimensions": [
+        {
+          "diameter": 0.0,
+          "drill": 0.0
+        }
+      ],
       "zones_allow_external_fillets": false,
       "zones_use_no_outline": true
     },
@@ -395,7 +414,7 @@
         "name": "Default",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "schematic_color": "rgba(0, 0, 0, 0.000)",
-        "track_width": 0.25,
+        "track_width": 0.5,
         "via_diameter": 0.8,
         "via_drill": 0.4,
         "wire_width": 6.0
